@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "users")
@@ -22,12 +23,14 @@ public class Users implements Serializable {
 	private Long id;
 
 	@Column
+	@NotNull
 	private String username;
 
 	@Column
 	private String password;
 
 	@Column
+	@NotNull
 	private String email;
 
 	@Column
@@ -41,6 +44,15 @@ public class Users implements Serializable {
 
 	@Column
 	private LocalDateTime lastLoginAttempt;
+
+	
+	private String otp;
+
+	@Column
+	private LocalDateTime otpGeneratedTime;
+	
+    @Column
+    private boolean isOtpVerified = false;
 
 	public Long getId() {
 		return id;
@@ -105,5 +117,30 @@ public class Users implements Serializable {
 	public void setBlockTime(LocalDateTime blockTime) {
 		this.blockTime = blockTime;
 	}
+	
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	public LocalDateTime getOtpGeneratedTime() {
+		return otpGeneratedTime;
+	}
+
+	public void setOtpGeneratedTime(LocalDateTime otpGeneratedTime) {
+		this.otpGeneratedTime = otpGeneratedTime;
+	}
+
+	public boolean isOtpVerified() {
+		return isOtpVerified;
+	}
+
+	public void setIsOtpVerified(boolean isOtpVerified) {
+		this.isOtpVerified = isOtpVerified;
+	}
+
 
 }
