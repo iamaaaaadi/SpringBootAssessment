@@ -12,7 +12,6 @@ import com.springboot.training.request.ForgetPasswordDto;
 import com.springboot.training.request.VerifyOtpDto;
 import com.springboot.training.service.ForgetPasswordService;
 
-
 @RequestMapping("/api/v1/")
 @RestController
 public class ForgetPasswordController {
@@ -30,10 +29,9 @@ public class ForgetPasswordController {
 		String response = forgetPasswordService.generateOtp(forgetPassowordDto);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@PostMapping("verify-otp")
-	public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpDto verifyOtpDto)
-			throws AssessmentException {
+	public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpDto verifyOtpDto) throws AssessmentException {
 		String response = forgetPasswordService.verifyOtp(verifyOtpDto);
 		return ResponseEntity.ok(response);
 	}

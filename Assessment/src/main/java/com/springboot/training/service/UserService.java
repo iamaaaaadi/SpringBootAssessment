@@ -5,7 +5,7 @@ import java.util.List;
 import com.springboot.training.entity.Users;
 
 public interface UserService {
-   
-	List<Users> getAllUser(); 
-	
+
+	List<Users> getAllUser();
+
 }

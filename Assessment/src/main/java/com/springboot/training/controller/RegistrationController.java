@@ -26,9 +26,9 @@ public class RegistrationController {
 	}
 
 	@PostMapping("register")
-	public ResponseEntity<String> registerUser( @Valid	 @RequestBody UserRegistrationDto userRegistrationDto)
+	public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto)
 			throws AssessmentException {
-		
+
 		String response = registrationService.registerUser(userRegistrationDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}

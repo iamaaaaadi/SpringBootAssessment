@@ -24,7 +24,6 @@ public class ForgetPasswordServiceImpl implements ForgetPasswordService {
 
 	@Autowired
 	public ForgetPasswordServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-		super();
 		this.userRepository = userRepository;
 	}
 
@@ -32,11 +31,14 @@ public class ForgetPasswordServiceImpl implements ForgetPasswordService {
 	public String generateOtp(ForgetPasswordDto forgetPasswordDto) throws AssessmentException {
 		// TODO Auto-generated method stub
 
+		// Checking if user exists or not
+
 		Optional<Users> optionalUser = userRepository.findByUsername(forgetPasswordDto.getUsername());
 		if (optionalUser.isEmpty()) {
 			throw new AssessmentException(HttpStatus.NOT_FOUND, ConstantUtil.USER_NOT_EXIST);
 		}
 
+		// Generating and Saving the OTP
 		Users user = optionalUser.get();
 		String otp = String.valueOf(new Random().nextInt(900000) + 100000);
 		user.setOtp(otp);
@@ -44,12 +46,14 @@ public class ForgetPasswordServiceImpl implements ForgetPasswordService {
 		user.setIsOtpVerified(false);
 		userRepository.save(user);
 
-		return otp;
+		return " Generated OTP is : " + otp;
 	}
 
 	@Override
 	public String verifyOtp(VerifyOtpDto verifyOtpDto) throws AssessmentException {
 		// TODO Auto-generated method stub
+
+		// Checking if user exists or not
 
 		Optional<Users> optionalUser = userRepository.findByUsername(verifyOtpDto.getUsername());
 		if (optionalUser.isEmpty()) {
@@ -58,18 +62,22 @@ public class ForgetPasswordServiceImpl implements ForgetPasswordService {
 
 		Users user = optionalUser.get();
 
+		// Validating the OTP
+
 		if (!user.getOtp().equals(verifyOtpDto.getOtp())) {
 			throw new AssessmentException(HttpStatus.BAD_REQUEST, ConstantUtil.OTP_MISMATCH);
 		}
 
+		// Checking if OTP generated in the last 5 minutes.
 		if (!user.getOtpGeneratedTime().plusMinutes(5).isAfter(LocalDateTime.now())) {
-            throw new AssessmentException(HttpStatus.BAD_REQUEST, ConstantUtil.OTP_EXPIRED); 
+			throw new AssessmentException(HttpStatus.GONE, ConstantUtil.OTP_EXPIRED);
 		}
-		
-		user.setIsOtpVerified(true); 
+
+		// Sending Success Message if OTP is verified
+		user.setIsOtpVerified(true);
 		userRepository.save(user);
-		return "OTP is Verified"; 
-		
+		return "OTP is Successfully Validated";
+
 	}
 
 }

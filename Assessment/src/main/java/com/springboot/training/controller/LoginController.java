@@ -24,15 +24,16 @@ public class LoginController {
 
 	@PostMapping("login")
 	public ResponseEntity<String> loginUser(@RequestBody UserLoginDto userLoginDto) throws AssessmentException {
-			String response = loginService.loginUser(userLoginDto);
-			return ResponseEntity.ok(response);
+		String response = loginService.loginUser(userLoginDto);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("reset-password")
-	public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) throws AssessmentException{
-		
-			String response = loginService.resetPassword(resetPasswordDto);
-			return ResponseEntity.ok(response); 
+	public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto)
+			throws AssessmentException {
+
+		String response = loginService.resetPassword(resetPasswordDto);
+		return ResponseEntity.ok(response);
 	}
 
 }

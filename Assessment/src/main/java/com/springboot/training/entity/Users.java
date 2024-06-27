@@ -9,28 +9,36 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+
+// Users Table is created with all the fields
 
 @Entity
 @Table(name = "users")
 
 public class Users implements Serializable {
 
-	private static final long serialVersionUID = 8500851767043648592L;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7574441416078891070L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Long id;
 
-	@Column
-	@NotNull
+	@NotEmpty(message = "Please enter a valid username")
+	@Column(nullable = false, unique = true)
 	private String username;
 
-	@Column
+	@NotEmpty(message = "Please enter a password")
+	@Column (nullable = false)
 	private String password;
 
-	@Column
-	@NotNull
+	@NotEmpty(message = "Please enter a valid email")
+	@Column(nullable = false, unique = true)
 	private String email;
 
 	@Column
@@ -134,7 +142,7 @@ public class Users implements Serializable {
 		this.otpGeneratedTime = otpGeneratedTime;
 	}
 
-	public boolean isOtpVerified() {
+	public boolean getisOtpVerified() {
 		return isOtpVerified;
 	}
 

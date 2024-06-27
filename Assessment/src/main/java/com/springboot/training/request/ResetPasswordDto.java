@@ -1,25 +1,22 @@
 package com.springboot.training.request;
 
+import javax.validation.constraints.NotEmpty;
+
 public class ResetPasswordDto {
+
+	@NotEmpty(message = "Please enter a valid username")
 	private String username;
-	private String otp;
+
+	@NotEmpty(message = "Please enter new password")
 	private String newPassword;
 
 	public String getUsername() {
 		return username;
 	}
 
-	public String getOtp() {
-		return otp;
-	}
-
-	public void setOtp(String otp) {
-		this.otp = otp;
-	}
-
 	public void setUsername(String username) {
 		this.username = username;
-	}	
+	}
 
 	public String getNewPassword() {
 		return newPassword;

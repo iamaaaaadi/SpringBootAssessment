@@ -23,7 +23,6 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	public LoginServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-		super();
 		this.userRepository = userRepository;
 	}
 
@@ -40,7 +39,7 @@ public class LoginServiceImpl implements LoginService {
 
 		Users user = optionalUser.get();
 
-		// If user is blocked
+		// If User is blocked
 
 		if (user.isBlocked()) {
 			LocalDateTime blockEndTime = user.getBlockTime().plusHours(24);
@@ -53,6 +52,7 @@ public class LoginServiceImpl implements LoginService {
 		}
 
 		if (!userLoginDto.getPassword().equals(user.getPassword())) {
+
 			// Handling Incorrect Password Attempts and Blocking User
 			user.setLoginAttempts(user.getLoginAttempts() + 1);
 			user.setLastLoginAttempt(LocalDateTime.now());
@@ -63,16 +63,17 @@ public class LoginServiceImpl implements LoginService {
 				userRepository.save(user);
 				throw new AssessmentException(HttpStatus.FORBIDDEN, ConstantUtil.ACCOUNT_BLOCKED);
 			}
-			
+
 			userRepository.save(user);
 			throw new AssessmentException(HttpStatus.UNAUTHORIZED, ConstantUtil.INVALID_CREDENTIALS);
 
 		}
 
+		// If Correct Password
 		user.setLoginAttempts(0);
 		user.setLastLoginAttempt(null);
 		userRepository.save(user);
-		return "Logged in Successfully";
+		return "Logged in Successfully !";
 
 	}
 
@@ -80,18 +81,22 @@ public class LoginServiceImpl implements LoginService {
 	public String resetPassword(ResetPasswordDto resetPasswordDto) throws AssessmentException {
 		// TODO Auto-generated method stub
 
+		// Checking if user exist or not
 		Optional<Users> optionalUser = userRepository.findByUsername(resetPasswordDto.getUsername());
 
+		// If not exist
 		if (optionalUser.isEmpty()) {
 			throw new AssessmentException(HttpStatus.NOT_FOUND, ConstantUtil.USER_NOT_EXIST);
 		}
 
 		Users user = optionalUser.get();
 
-		if (!resetPasswordDto.getOtp().equals(user.getOtp())) {
-			throw new AssessmentException(HttpStatus.BAD_REQUEST, ConstantUtil.INVALID_CREDENTIALS);
+		// If OTP is not verified
+		if (!user.getisOtpVerified()) {
+			throw new AssessmentException(HttpStatus.UNAUTHORIZED, ConstantUtil.OTP_NOT_VERIFIED);
 		}
 
+		// Set New Password if OTP is verified
 		user.setPassword(resetPasswordDto.getNewPassword());
 		userRepository.save(user);
 		return "Password reset successfully";

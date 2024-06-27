@@ -6,7 +6,6 @@ import com.springboot.training.request.VerifyOtpDto;
 
 public interface ForgetPasswordService {
    
-	String generateOtp(ForgetPasswordDto forgetPasswordDto) throws AssessmentException;
-	String verifyOtp(VerifyOtpDto verifyOtpDto) throws AssessmentException;
-		
+	String generateOtp(ForgetPasswordDto forgetPasswordDto) throws AssessmentException;	
+	String verifyOtp(VerifyOtpDto verifyOtpDto) throws AssessmentException; 
 }

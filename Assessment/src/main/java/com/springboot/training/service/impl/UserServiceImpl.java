@@ -16,15 +16,14 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-		super();
-		this.userRepository = userRepository; 
+		this.userRepository = userRepository;
 	}
 
 	@Override
 	public List<Users> getAllUser() {
 		// TODO Auto-generated method stub
-		
-		//Fetching all the users
+
+		// Fetching all the users
 		return userRepository.findAll();
 	}
 }
