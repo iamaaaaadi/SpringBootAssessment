@@ -17,7 +17,6 @@ public class HealthStatusController {
 	// TODO Auto-generated constructor stub
 
 	public ResponseEntity<String> healthCheck() {
-
 		return ResponseEntity.status(HttpStatus.OK).body("Health Status is Good");
 	}
 }

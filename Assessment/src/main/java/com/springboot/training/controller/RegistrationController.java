@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.training.exception.UserAlreadyExistsException;
+import com.springboot.training.exception.AssessmentException;
 import com.springboot.training.request.UserRegistrationDto;
 import com.springboot.training.service.RegistrationService;
+
+import jakarta.validation.Valid;
 
 @RequestMapping("/api/v1/")
 @RestController
@@ -20,21 +22,15 @@ public class RegistrationController {
 
 	@Autowired
 	public RegistrationController(RegistrationService registrationService) {
-		super();
 		this.registrationService = registrationService;
 	}
 
 	@PostMapping("register")
-	public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto userRegistrationDto) {
-		try {
-			String response = registrationService.registerUser(userRegistrationDto);
-			return ResponseEntity.status(HttpStatus.CREATED).body(response);
-		} catch (UserAlreadyExistsException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("An error occurred while processing the request.");
-		}
+	public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto)
+			throws AssessmentException {
+
+		String response = registrationService.registerUser(userRegistrationDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 }

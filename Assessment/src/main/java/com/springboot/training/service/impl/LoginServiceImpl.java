@@ -5,15 +5,16 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.springboot.training.dao.UserRepository;
 import com.springboot.training.entity.Users;
-import com.springboot.training.exception.AccountLockedException;
-import com.springboot.training.exception.InvalidCredentialsException;
+import com.springboot.training.exception.AssessmentException;
 import com.springboot.training.request.ResetPasswordDto;
 import com.springboot.training.request.UserLoginDto;
 import com.springboot.training.service.LoginService;
+import com.springboot.training.util.ConstantUtil;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -22,40 +23,37 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	public LoginServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-		super();
 		this.userRepository = userRepository;
 	}
 
 	@Override
-	public String loginUser(UserLoginDto userLoginDto) {
+	public String loginUser(UserLoginDto userLoginDto) throws AssessmentException {
 		// TODO Auto-generated method stub
 
 		Optional<Users> optionalUser = userRepository.findByUsername(userLoginDto.getUsername());
 
+		// If User does not exist
 		if (optionalUser.isEmpty()) {
-			 throw new InvalidCredentialsException("Invalid username or password.");
+			throw new AssessmentException(HttpStatus.NOT_FOUND, ConstantUtil.USER_NOT_EXIST);
 		}
 
 		Users user = optionalUser.get();
-		System.out.println(user);
+
+		// If User is blocked
 
 		if (user.isBlocked()) {
 			LocalDateTime blockEndTime = user.getBlockTime().plusHours(24);
 			if (LocalDateTime.now().isBefore(blockEndTime)) {
-				  throw new AccountLockedException("Account is locked. Try again after 24 hours.");
-			} else {
-				user.setBlocked(false);
-				user.setLoginAttempts(0);
-				user.setBlockTime(null);
+				throw new AssessmentException(HttpStatus.FORBIDDEN, ConstantUtil.ACCOUNT_BLOCKED);
 			}
+			user.setBlocked(false);
+			user.setLoginAttempts(0);
+			user.setBlockTime(null);
 		}
 
-		if (userLoginDto.getPassword().equals(user.getPassword())) {
-			user.setLoginAttempts(0);
-			user.setLastLoginAttempt(null);
-			userRepository.save(user);
-			return "Logged in Successfully";
-		} else {
+		if (!userLoginDto.getPassword().equals(user.getPassword())) {
+
+			// Handling Incorrect Password Attempts and Blocking User
 			user.setLoginAttempts(user.getLoginAttempts() + 1);
 			user.setLastLoginAttempt(LocalDateTime.now());
 
@@ -63,34 +61,45 @@ public class LoginServiceImpl implements LoginService {
 				user.setBlocked(true);
 				user.setBlockTime(LocalDateTime.now());
 				userRepository.save(user);
-				 throw new AccountLockedException("Account locked due to 5 failed login attempts.Try again after 24 hours.");
+				throw new AssessmentException(HttpStatus.FORBIDDEN, ConstantUtil.ACCOUNT_BLOCKED);
 			}
 
 			userRepository.save(user);
-			  throw new InvalidCredentialsException("Invalid username or password. Attempt " + user.getLoginAttempts() + " of 5.");
+			throw new AssessmentException(HttpStatus.UNAUTHORIZED, ConstantUtil.INVALID_CREDENTIALS);
+
 		}
+
+		// If Correct Password
+		user.setLoginAttempts(0);
+		user.setLastLoginAttempt(null);
+		userRepository.save(user);
+		return "Logged in Successfully !";
 
 	}
 
 	@Override
-	public String resetPassword(ResetPasswordDto resetPasswordDto) {
+	public String resetPassword(ResetPasswordDto resetPasswordDto) throws AssessmentException {
 		// TODO Auto-generated method stub
-		
+
+		// Checking if user exist or not
 		Optional<Users> optionalUser = userRepository.findByUsername(resetPasswordDto.getUsername());
 
-        if (optionalUser.isEmpty()) {
-        	   throw new InvalidCredentialsException("Invalid username.");
-        }
+		// If not exist
+		if (optionalUser.isEmpty()) {
+			throw new AssessmentException(HttpStatus.NOT_FOUND, ConstantUtil.USER_NOT_EXIST);
+		}
 
-        Users user = optionalUser.get();
+		Users user = optionalUser.get();
 
-        if (!resetPasswordDto.getOldPassword().equals(user.getPassword())) {
-        	  throw new InvalidCredentialsException("Old password is incorrect.");
-        }
+		// If OTP is not verified
+		if (!user.getisOtpVerified()) {
+			throw new AssessmentException(HttpStatus.UNAUTHORIZED, ConstantUtil.OTP_NOT_VERIFIED);
+		}
 
-        user.setPassword(resetPasswordDto.getNewPassword());
-        userRepository.save(user);
-        return "Password reset successful";
-		
+		// Set New Password if OTP is verified
+		user.setPassword(resetPasswordDto.getNewPassword());
+		userRepository.save(user);
+		return "Password reset successfully";
+
 	}
 }

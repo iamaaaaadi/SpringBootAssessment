@@ -9,25 +9,36 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+
+// Users Table is created with all the fields
 
 @Entity
 @Table(name = "users")
 
 public class Users implements Serializable {
 
-	private static final long serialVersionUID = 8500851767043648592L;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7574441416078891070L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Long id;
 
-	@Column
+	@NotEmpty(message = "Please enter a valid username")
+	@Column(nullable = false, unique = true)
 	private String username;
 
-	@Column
+	@NotEmpty(message = "Please enter a password")
+	@Column (nullable = false)
 	private String password;
 
-	@Column
+	@NotEmpty(message = "Please enter a valid email")
+	@Column(nullable = false, unique = true)
 	private String email;
 
 	@Column
@@ -41,6 +52,15 @@ public class Users implements Serializable {
 
 	@Column
 	private LocalDateTime lastLoginAttempt;
+
+	
+	private String otp;
+
+	@Column
+	private LocalDateTime otpGeneratedTime;
+	
+    @Column
+    private boolean isOtpVerified = false;
 
 	public Long getId() {
 		return id;
@@ -105,5 +125,30 @@ public class Users implements Serializable {
 	public void setBlockTime(LocalDateTime blockTime) {
 		this.blockTime = blockTime;
 	}
+	
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	public LocalDateTime getOtpGeneratedTime() {
+		return otpGeneratedTime;
+	}
+
+	public void setOtpGeneratedTime(LocalDateTime otpGeneratedTime) {
+		this.otpGeneratedTime = otpGeneratedTime;
+	}
+
+	public boolean getisOtpVerified() {
+		return isOtpVerified;
+	}
+
+	public void setIsOtpVerified(boolean isOtpVerified) {
+		this.isOtpVerified = isOtpVerified;
+	}
+
 
 }
